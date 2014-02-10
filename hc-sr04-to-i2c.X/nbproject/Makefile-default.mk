@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=test.asm
+SOURCEFILES_QUOTED_IF_SPACED=hc-sr04-to-i2c.asm
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/test.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/test.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hc-sr04-to-i2c.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/hc-sr04-to-i2c.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/test.o
+OBJECTFILES=${OBJECTDIR}/hc-sr04-to-i2c.o
 
 # Source Files
-SOURCEFILES=test.asm
+SOURCEFILES=hc-sr04-to-i2c.asm
 
 
 CFLAGS=
@@ -79,22 +79,22 @@ MP_LINKER_DEBUG_OPTION= -r=RAM@GPR:0x320:0x32F
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/test.o: test.asm  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/hc-sr04-to-i2c.o: hc-sr04-to-i2c.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/test.o.d 
-	@${RM} ${OBJECTDIR}/test.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/test.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PK3=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/test.lst\\\" -e\\\"${OBJECTDIR}/test.err\\\" $(ASM_OPTIONS)   -o\\\"${OBJECTDIR}/test.o\\\" \\\"test.asm\\\" 
-	@${DEP_GEN} -d "${OBJECTDIR}/test.o"
-	@${FIXDEPS} "${OBJECTDIR}/test.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	@${RM} ${OBJECTDIR}/hc-sr04-to-i2c.o.d 
+	@${RM} ${OBJECTDIR}/hc-sr04-to-i2c.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/hc-sr04-to-i2c.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PK3=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/hc-sr04-to-i2c.lst\\\" -e\\\"${OBJECTDIR}/hc-sr04-to-i2c.err\\\" $(ASM_OPTIONS)   -o\\\"${OBJECTDIR}/hc-sr04-to-i2c.o\\\" \\\"hc-sr04-to-i2c.asm\\\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/hc-sr04-to-i2c.o"
+	@${FIXDEPS} "${OBJECTDIR}/hc-sr04-to-i2c.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
 else
-${OBJECTDIR}/test.o: test.asm  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/hc-sr04-to-i2c.o: hc-sr04-to-i2c.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/test.o.d 
-	@${RM} ${OBJECTDIR}/test.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/test.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/test.lst\\\" -e\\\"${OBJECTDIR}/test.err\\\" $(ASM_OPTIONS)   -o\\\"${OBJECTDIR}/test.o\\\" \\\"test.asm\\\" 
-	@${DEP_GEN} -d "${OBJECTDIR}/test.o"
-	@${FIXDEPS} "${OBJECTDIR}/test.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	@${RM} ${OBJECTDIR}/hc-sr04-to-i2c.o.d 
+	@${RM} ${OBJECTDIR}/hc-sr04-to-i2c.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/hc-sr04-to-i2c.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/hc-sr04-to-i2c.lst\\\" -e\\\"${OBJECTDIR}/hc-sr04-to-i2c.err\\\" $(ASM_OPTIONS)   -o\\\"${OBJECTDIR}/hc-sr04-to-i2c.o\\\" \\\"hc-sr04-to-i2c.asm\\\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/hc-sr04-to-i2c.o"
+	@${FIXDEPS} "${OBJECTDIR}/hc-sr04-to-i2c.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
 endif
 
