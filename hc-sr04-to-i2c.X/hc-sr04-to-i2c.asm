@@ -11,17 +11,25 @@
         d2
 
         ; PWM measurement CCP variables
-        captureRising
+        captureFalling
         risingTimeH
         risingTimeL
         fallingTimeH
         fallingTimeL
+        timeout
 
         ENDC
 
 
 CaptureRising	equ	b'00000101'
 CaptureFalling	equ	b'00000100'
+
+
+
+
+
+
+
 
 
 
@@ -32,13 +40,65 @@ CaptureFalling	equ	b'00000100'
         ; Interrupt
         ORG 0x004
 
+
+        BTFSS   captureFalling, 0   ; Go to the rising or falling pahse code
+        GOTO    RisingPulsePhase
+        GOTO    FallingPulsePhase
+
+RisingPulsePhase
+
+        BANKSEL CCP3CON
+        MOVLW   CaptureFalling
+        MOVWF   CCP3CON             ; Switch to capture falling mode
+
+        BSF     captureFalling, 0   ; Switch to falling pulse detection
+
+        GOTO    EndInterrupt
+
+
+FallingPulsePhase
+
+        BANKSEL PORTB
+        BTFSS   timeout, 0
+        BSF     PORTB, 1
+
+
+        BANKSEL CCP3CON
+        MOVLW   CaptureRising
+        MOVWF   CCP3CON             ; Switch to rising pulse detection
+
+        BCF     captureFalling, 0
+
+        GOTO    EndInterrupt
+
+
+EndInterrupt
+
+
         BANKSEL PIR3
         BCF     PIR3, CCP3IF    ; Clear the intterupt
+
 
         RETFIE
 
 
 Init
+        CALL InitPins
+        CALL InitCCP
+
+        BANKSEL PORTB
+
+
+Loop
+
+        CALL trigger_pulse
+        CALL wait_for_and_record_pwm
+
+        GOTO Loop
+
+
+
+
 
 InitPins
     	BANKSEL	PORTB
@@ -48,8 +108,13 @@ InitPins
         MOVLW   b'00100000'
         MOVWF   TRISB			; All outputs, except RB5 which is an input
 
+        BANKSEL ANSELB
+        CLRF    ANSELB
+
         BANKSEL APFCON
         BSF     APFCON, CCP3SEL ; Make sure CCP3 is on RB5
+
+        RETURN
 
 
 InitCCP
@@ -66,15 +131,7 @@ InitCCP
 
 
 
-
-Loop
-
-        CALL trigger_pulse
-
-        CALL wait_for_and_record_pwm
-
-        GOTO Loop
-
+        RETURN
 
 
 trigger_pulse
@@ -90,17 +147,34 @@ trigger_pulse
         RETURN
 
 wait_for_and_record_pwm
+
+
+        ; Get ready to receive the pulse, switch to start capture rising
+        ;  and reset the timeout
+        CLRF    timeout         ; Initialize our timeout variable
+
+        BANKSEL PIE3
+        BCF     PIE3, CCP3IE    ; Disable CCP3 interrupt
+
+        BCF     captureFalling, 0
+
         BANKSEL CCP3CON
         MOVLW   CaptureRising
         MOVWF   CCP3CON         ; Capture rising edges
 
         BANKSEL PIE3
-        BSF     PIE3, CCP3IE    ; Enable CCP3 Interrupt
+        BSF     PIE3, CCP3IE    ; Enable CCP3 interrupt
 
-        CALL delay_50ms         ; Wait for 50ms to start again
 
-        BANKSEL PIE3
-        BCF     PIE3, CCP3IE    ; Disable CCP3 interrupt
+        CALL delay_30ms         ; Wait for 30ms
+
+        BSF     timeout, 0      ; It took too long, ignore any falling edge
+
+        CALL delay_20ms         ; Finish the waiting until the next trigger
+
+
+        BANKSEL PORTB
+        BCF     PORTB, 1
 
         RETURN
 
@@ -117,6 +191,50 @@ delay_10us_0
 
         ;4 cycles (including call)
         return
+
+
+
+
+delay_20ms
+			;99993 cycles
+	movlw	0x1E
+	movwf	d1
+	movlw	0x4F
+	movwf	d2
+delay_20ms_0
+	decfsz	d1, f
+	goto	$+2
+	decfsz	d2, f
+	goto	delay_20ms_0
+
+			;3 cycles
+	goto	$+1
+	nop
+
+			;4 cycles (including call)
+	return
+
+
+
+delay_30ms
+			;149993 cycles
+	movlw	0x2E
+	movwf	d1
+	movlw	0x76
+	movwf	d2
+delay_30ms_0
+	decfsz	d1, f
+	goto	$+2
+	decfsz	d2, f
+	goto	delay_30ms_0
+
+			;3 cycles
+	goto	$+1
+	nop
+
+			;4 cycles (including call)
+	return
+
 
 
 
