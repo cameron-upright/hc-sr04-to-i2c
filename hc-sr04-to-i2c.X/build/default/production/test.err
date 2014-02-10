@@ -1,5 +1,0 @@
-Message[303] /Users/upright/Work/Projects/hc-sr04-to-i2c/hc-sr04-to-i2c.X/test.asm 3 : Program word too large.  Truncated to core size. (CFA2)
-Message[303] /Users/upright/Work/Projects/hc-sr04-to-i2c/hc-sr04-to-i2c.X/test.asm 4 : Program word too large.  Truncated to core size. (DAFF)
-Message[302] /Users/upright/Work/Projects/hc-sr04-to-i2c/hc-sr04-to-i2c.X/test.asm 13 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[303] /Users/upright/Work/Projects/hc-sr04-to-i2c/hc-sr04-to-i2c.X/test.asm 26 : Program word too large.  Truncated to core size. (CFA2)
-Message[303] /Users/upright/Work/Projects/hc-sr04-to-i2c/hc-sr04-to-i2c.X/test.asm 26 : Program word too large.  Truncated to core size. (DAFF)
