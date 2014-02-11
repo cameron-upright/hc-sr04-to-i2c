@@ -16,6 +16,9 @@
         risingTimeL
         fallingTimeH
         fallingTimeL
+        diffH
+        diffL
+        lowBorrow
         timeout
 
         ENDC
@@ -47,6 +50,12 @@ CaptureFalling	equ	b'00000100'
 
 RisingPulsePhase
 
+    	MOVF	CCPR1H, W		;
+    	MOVWF	risingTimeH		;
+    	MOVF	CCPR1L, W		;
+    	MOVWF	risingTimeL		; Capture the time of the rising pulse
+
+
         BANKSEL CCP3CON
         MOVLW   CaptureFalling
         MOVWF   CCP3CON             ; Switch to capture falling mode
@@ -57,6 +66,30 @@ RisingPulsePhase
 
 
 FallingPulsePhase
+
+    	MOVF	CCPR1H, W		;
+    	MOVWF	fallingTimeH	;
+    	MOVF	CCPR1L, W		;
+    	MOVWF	fallingTimeL    ; Capture the time of the raise
+
+
+    	;; Perform subtraction of [fallingTimeH|fallingTimeL] - [risingTimeH|risingTimeL]
+    	CLRF	lowBorrow		; Clear out the variable that tracks if the low resulted in a carry
+    	MOVF	risingTimeL, W
+    	SUBWF	fallingTimeL, F		; fallingTimeL -= risingTimeL
+    	BTFSS	STATUS, C		; !borrow
+    	INCF	lowBorrow, F		; if (borrowed), increment low borrow (set to 1)
+    	MOVF	risingTimeH, W
+    	SUBWF	fallingTimeH, F		; fallingTimeH -= risingTimeH
+    	MOVF	lowBorrow, W
+    	SUBWF	fallingTimeH, F		; fallingTimeH -= lowBorrow
+
+    	MOVF	fallingTimeH, W
+    	MOVWF	diffH
+    	MOVF	fallingTimeL, W
+    	MOVWF	diffL
+
+
 
         BANKSEL PORTB
         BTFSS   timeout, 0
@@ -119,8 +152,8 @@ InitPins
 
 InitCCP
         BANKSEL T1CON
-        MOVLW   b'00000001'
-        MOVWF   T1CON           ; 1:1 prescale, instruction clock, timer1 on
+        MOVLW   b'00100001'
+        MOVWF   T1CON           ; 1:4 prescale, instruction clock, timer1 on
 
         BANKSEL T1GCON
         CLRF    T1GCON          ; No gate stuff
@@ -153,8 +186,6 @@ wait_for_and_record_pwm
         ;  and reset the timeout
         CLRF    timeout         ; Initialize our timeout variable
 
-        BANKSEL PIE3
-        BCF     PIE3, CCP3IE    ; Disable CCP3 interrupt
 
         BCF     captureFalling, 0
 
@@ -171,6 +202,10 @@ wait_for_and_record_pwm
         BSF     timeout, 0      ; It took too long, ignore any falling edge
 
         CALL delay_20ms         ; Finish the waiting until the next trigger
+
+
+        BANKSEL PIE3
+        BCF     PIE3, CCP3IE    ; Disable CCP3 interrupt
 
 
         BANKSEL PORTB
